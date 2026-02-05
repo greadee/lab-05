@@ -2,8 +2,8 @@
 
 ## Student Details
 
-- **Full Name:** `<Enter name>`
-- **CCID:** `<Enter ccid>`
+- **Full Name:** `Connor Proulx`
+- **CCID:** `cwproul1`
 
 ## References and Resources
 
