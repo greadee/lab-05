@@ -17,6 +17,7 @@ public class CityDialogFragment extends DialogFragment {
     interface CityDialogListener {
         void updateCity(City city, String title, String year);
         void addCity(City city);
+        void delCity(City city);
     }
     private CityDialogListener listener;
 
@@ -44,36 +45,47 @@ public class CityDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = getLayoutInflater().inflate(R.layout.fragment_city_details, null);
-        EditText editMovieName = view.findViewById(R.id.edit_city_name);
-        EditText editMovieYear = view.findViewById(R.id.edit_province);
+        EditText editCityName = view.findViewById(R.id.edit_city_name);
+        EditText editCityProv = view.findViewById(R.id.edit_province);
 
         String tag = getTag();
         Bundle bundle = getArguments();
         City city;
 
-        if (Objects.equals(tag, "City Details") && bundle != null){
+        boolean isAnEdit = Objects.equals(tag, "City Details");
+
+        if (isAnEdit && bundle != null){
             city = (City) bundle.getSerializable("City");
             assert city != null;
-            editMovieName.setText(city.getName());
-            editMovieYear.setText(city.getProvince());
+            editCityName.setText(city.getName());
+            editCityProv.setText(city.getProvince());
         }
         else {
             city = null;}
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        return builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setView(view)
-                .setTitle("City Details")
+                .setTitle(isAnEdit ? "City Details" : "Add City")
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Continue", (dialog, which) -> {
-                    String title = editMovieName.getText().toString();
-                    String year = editMovieYear.getText().toString();
+                    String name = editCityName.getText().toString();
+                    String prov = editCityProv.getText().toString();
                     if (Objects.equals(tag, "City Details")) {
-                        listener.updateCity(city, title, year);
+                        listener.updateCity(city, name, prov);
                     } else {
-                        listener.addCity(new City(title, year));
+                        listener.addCity(new City(name, prov));
                     }
-                })
-                .create();
+                });
+
+        if (isAnEdit) {
+            builder.setNeutralButton("Delete", (dialog, which) -> {
+                if (city != null) {
+                    listener.delCity(city);
+                }
+            });
+        }
+        return builder.create();
+
+        }
     }
-}
+
